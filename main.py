@@ -93,15 +93,16 @@ def AnaMarket():
                 index=False
             )
 
-    top = df.head(10).copy()
+        top = df.head(10).copy()
 
-    top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
+        top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
 
-    ranking_data = top.to_dict(orient="records")
+        ranking_data = top.to_dict(orient="records")
 
     return render_template("index.html", table=table, ranking = ranking_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
