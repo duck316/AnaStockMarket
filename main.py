@@ -4,6 +4,8 @@ import re
 
 app = Flask(__name__)
 
+ranking= 0
+
 def clean_numeric(value):
     """Convierte valores tipo $1.2B, 15%, 12-18 a float"""
     if pd.isna(value):
@@ -66,8 +68,6 @@ def index():
                ## df["52-week-range_num"].rank(pct=True)
             )
 
-
-
             # Ordenar de mejor a mayor
             df = df.sort_values("Score", ascending=False)
 
@@ -92,17 +92,13 @@ def index():
                 index=False
             )
 
-    top = df.head(10).copy()
+        top = df.head(10).copy()
 
-    top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
+        top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
 
     ranking_data = top.to_dict(orient="records")
 
-    return render_template(
-        "index.html",
-        table=table,
-        ranking=ranking_data
-    )
+    return render_template("index.html", table=table, ranking = ranking_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
