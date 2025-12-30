@@ -100,7 +100,6 @@ def AnaMarket():
         return render_template("index.html", table=table, ranking=ranking_data)
 
     else:
-        print("No hay archivo")
         table = None
         ranking = None
         top = None
@@ -109,6 +108,7 @@ def AnaMarket():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
