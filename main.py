@@ -92,17 +92,24 @@ def AnaMarket():
                 classes="table table-striped table-hover",
                 index=False
             )
-
         top = df.head(10).copy()
 
         top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
 
         ranking_data = top.to_dict(orient="records")
+        return render_template("index.html", table=table, ranking=ranking_data)
 
-    return render_template("index.html", table=table, ranking = ranking_data)
+    else:
+        print("No hay archivo")
+        table = None
+        ranking = None
+        top = None
+
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
