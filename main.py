@@ -105,10 +105,12 @@ def AnaMarket():
         ranking = None
         top = None
 
-    return render_template("index.html")
+    return jsonify({"status": "ok"}), 200
+    ## return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
