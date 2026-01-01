@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />    
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -11,8 +9,8 @@
 
     <h2>Subir archivo CSV</h2>
 
-    <form method="POST" enctype="multipart/form-data" accept="text/csv, .csv" class="mb-4">
-        <input type="file" name="file" accept=".csv" class="form-control mb-2" required>
+    <form action= "/uploads" method="POST" enctype="multipart/form-data" class="mb-4">
+        <input type="file" name="file" formenctype="multipart/form-data" accept=".CSV" class="form-control mb-2" required>
         <button type="submit" class="btn btn-primary">Subir</button>
     </form>
 
@@ -41,16 +39,4 @@
         </div>
     {% endif %}
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
