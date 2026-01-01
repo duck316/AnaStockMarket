@@ -5,7 +5,7 @@ import re
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = "/"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def clean_numeric(value):
@@ -27,7 +27,7 @@ def index():
     return render_template("index.html", table=None, ranking=None)
 
 
-@app.route("/uploads", methods=["POST"])
+@app.route("/", methods=["POST"])
 def upload():
     try:
         file = request.files.get("file")
@@ -80,3 +80,4 @@ def upload():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
