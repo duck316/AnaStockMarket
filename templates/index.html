@@ -29,26 +29,15 @@ function uploadCSV() {
     const formData = new FormData();
     formData.append("file", fileInput.files[0]);
 
-    fetch("/", {
-        method: "POST",
-        body: formData
-    })
-    .then(async res => {
-        const text = await res.text();
-        if (!res.ok) {
-            console.error("STATUS:", res.status);
-            console.error(text);
-            alert("Error servidor: " + res.status);
-            throw new Error("HTTP error");
-        }
-        document.open();
-        document.write(text);
-        document.close();
-    })
-    .catch(err => {
-        console.error("FETCH ERROR:", err);
-        alert("Error al subir archivo (ver consola)");
-    });
+fetch("/", { method: "POST", body: formData })
+.then(res => res.text())
+.then(html => {
+    document.getElementById("result").innerHTML = html;
+})
+.catch(err => {
+    console.error(err);
+    alert("Error al subir archivo (ver consola)");
+});
 }
 </script>
 
@@ -78,5 +67,6 @@ function uploadCSV() {
 
 </body>
 </html>
+
 
 
