@@ -1,93 +1,82 @@
-from flask import Flask, request, jsonify
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, jsonify
+import pandas as pd
 import os
+import re
 
-## Carga CSV
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-@app.route("/upload", methods=["POST"])
-def upload_csv():
-    file = request.files.get("file")
+def clean_numeric(value):
+    if pd.isna(value):
+        return None
 
-    if not file or not file.filename.endswith(".csv"):
-        return jsonify({"error": "Invalid file"}), 400
+    value = str(value)
+    value = value.replace("%", "")
+    value = re.sub(r"[^\d.-]", "", value)
 
-    filename = secure_filename(file.filename)
-    path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    try:
+        return float(value)
+    except:
+        return None
 
-    file.save(path)
 
-    # 🔥 RESPUESTA INMEDIATA
-    return jsonify({"status": "ok", "file": filename}), 200
-
-## Procesa y muestra
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    return render_template("index.html", table=None, ranking=None)
 
-## Procesa CSV Get y Post
 
-@app.route("/analyze/<filename>")
-def analyze(filename):
-    path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+@app.route("/uploads", methods=["POST"])
+def upload():
+    try:
+        file = request.files.get("file")
 
-    df = pd.read_csv(path)
+        if not file or not file.filename.endswith(".csv"):
+            return jsonify({"error": "Invalid file"}), 400
 
-    # TODO: tu lógica actual de pandas aquí
+        df = pd.read_csv(file)
 
-    columns = [
-        "Market Cap",
-        "P/E ratio",
-        "PEP-Share",
-        "Yield",
-        "52-week-range"
-    ]
+        required_cols = [
+            "Market Cap",
+            "Yield",
+            "PEP-Share",
+            "P/E ratio"
+        ]
 
-    # Limpiar columnas
-    for col in columns:
-        if col in df.columns:
+        for col in required_cols:
+            if col not in df.columns:
+                return jsonify({"error": f"Missing column {col}"}), 400
             df[col + "_num"] = df[col].apply(clean_numeric)
 
-    # Normalización
-    df["Score"] = (
+        df["Score"] = (
             df["Market Cap_num"].rank(pct=True) +
             df["Yield_num"].rank(pct=True) +
             df["PEP-Share_num"].rank(pct=True) -
             df["P/E ratio_num"].rank(pct=True)
-        ## df["52-week-range_num"].rank(pct=True)
-    )
+        )
 
-    # Ordenar de mejor a mayor
-    df = df.sort_values("Score", ascending=False)
+        df = df.sort_values("Score", ascending=False)
+        df["Ranking"] = range(1, len(df) + 1)
 
-    # Ranking Numerico
-    df["Ranking"] = range(1, len(df) + 1)
+        table = df.to_html(
+            classes="table table-striped table-hover",
+            index=False
+        )
 
-    display_cols = [
-        "Ranking",
-        "Symbol",
-        "Market Cap",
-        "P/E ratio",
-        "PEP-Share",
-        "Yield",
-        "52-week-range-low",
-        "52-week-range-high",
-        "Symbol Description",
-        ## "Score"
-    ]
+        top = df.head(10).copy()
+        top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
+        ranking = top.to_dict(orient="records")
 
-    table = df.to_html(
-        classes="table table-striped table-hover",
-        index=False
-    )
+        return render_template(
+            "index.html",
+            table=table,
+            ranking=ranking
+        )
 
-    top = df.head(10).copy()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    top["Score_norm"] = (top["Score"] / top["Score"].max()) * 100
 
-    ranking_data = top.to_dict(orient="records")
-    return render_template("index.html", table=table, ranking=ranking_data)
+if __name__ == "__main__":
+    app.run(debug=True)
