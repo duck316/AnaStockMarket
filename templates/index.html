@@ -7,12 +7,18 @@
 </head>
 <body class="container mt-5">
 
-    <h2>Subir archivo CSV</h2>
+<h2>Subir archivo CSV</h2>
 
-    <form method="POST" enctype="multipart/form-data" class="mb-4">
-        <input type="file" name="file" formenctype="multipart/form-data" accept=".CSV" class="form-control mb-2" required>
-        <button type="submit" class="btn btn-primary">Subir</button>
-    </form>
+<form method="POST" enctype="multipart/form-data" class="mb-4">
+    <input
+        type="file"
+        name="file"
+        accept=".csv,text/csv"
+        class="form-control mb-2"
+        required
+    >
+    <button type="submit" class="btn btn-primary">Subir</button>
+</form>
 
 {% if ranking %}
 <h3 class="mt-5">🏆 Top 10 Ranking Visual</h3>
@@ -31,14 +37,12 @@
 {% endfor %}
 {% endif %}
 
+{% if table %}
+<h3>Contenido del CSV</h3>
+<div class="table-responsive">
+    {{ table | safe }}
+</div>
+{% endif %}
 
-    {% if table %}
-        <h3>Contenido del CSV</h3>
-        <div class="table-responsive">
-            {{ table | safe }}
-        </div>
-    {% endif %}
 </body>
 </html>
-
-
