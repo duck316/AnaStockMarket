@@ -24,8 +24,26 @@ def clean_numeric(value):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    table = None
+    ranking = None
+
     if request.method == "POST":
         file = request.files.get("file")
+        if not file:
+            return "No file received", 400
+
+        try:
+            df = pd.read_csv(file)
+        except Exception as e:
+            return f"CSV error: {e}", 400
+
+        table = df.head().to_html(index=False)
+
+    return render_template(
+        "index.html",
+        table=table,
+        ranking=ranking
+    )
     return render_template("index.html", table=None, ranking=None)
 
 
