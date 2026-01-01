@@ -44,8 +44,6 @@ def index():
         table=table,
         ranking=ranking
     )
-    return render_template("index.html", table=None, ranking=None)
-
 
 @app.route("/", methods=["POST"])
 def upload():
@@ -100,5 +98,6 @@ def upload():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
