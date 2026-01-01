@@ -9,16 +9,42 @@
 
 <h2>Subir archivo CSV</h2>
 
-<form method="POST" enctype="multipart/form-data" class="mb-4">
-    <input
-        type="file"
-        name="file"
-        accept=".csv,text/csv"
-        class="form-control mb-2"
-        required
-    >
-    <button type="submit" class="btn btn-primary">Subir</button>
-</form>
+<input
+  type="file"
+  id="csvFile"
+  accept=".csv,text/csv"
+  class="form-control mb-2"
+>
+
+<button class="btn btn-primary" onclick="uploadCSV()">Subir</button>
+
+<script>
+function uploadCSV() {
+    const fileInput = document.getElementById("csvFile");
+    if (!fileInput.files.length) {
+        alert("Selecciona un archivo CSV");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    fetch("/", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+    })
+    .catch(err => {
+        alert("Error al subir archivo");
+        console.error(err);
+    });
+}
+</script>
 
 {% if ranking %}
 <h3 class="mt-5">🏆 Top 10 Ranking Visual</h3>
@@ -46,3 +72,4 @@
 
 </body>
 </html>
+
