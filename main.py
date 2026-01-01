@@ -30,16 +30,15 @@ def index():
     if request.method == "POST":
         file = request.files.get("file")
         if not file:
-            return "No file", 400
+            return "No file received", 400
 
         df = pd.read_csv(file)
-        table = df.head().to_html(index=False)
 
-    return render_template(
-        "index.html",
-        table=table,
-        ranking=ranking
-    )
+        # Lógica de ranking y tabla
+        # ...
+        table = df.head(10).to_html(classes="table table-striped", index=False)
+
+    return render_template("index.html", table=table, ranking=ranking)
 
 @app.route("/", methods=["POST"])
 def upload():
@@ -94,6 +93,7 @@ def upload():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
