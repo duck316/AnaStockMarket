@@ -39,7 +39,11 @@ def index():
         table = df.head(10).to_html(classes="table table-striped", index=False)
 
     return render_template("index.html", table=table, ranking=ranking)
-
+    
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
+    
 @app.route("/", methods=["POST"])
 def upload():
     try:
@@ -93,6 +97,7 @@ def upload():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
