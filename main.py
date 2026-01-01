@@ -22,8 +22,10 @@ def clean_numeric(value):
         return None
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "POST":
+        file = request.files.get("file")
     return render_template("index.html", table=None, ranking=None)
 
 
@@ -80,4 +82,5 @@ def upload():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
