@@ -17,29 +17,43 @@
 >
 
 <button class="btn btn-primary" onclick="uploadCSV()">Subir</button>
+ <!-- Contenedor para resultados -->
+    <div id="result"></div>
 
-<script>
-function uploadCSV() {
-    const fileInput = document.getElementById("csvFile");
-    if (!fileInput.files.length) {
-        alert("Selecciona un archivo CSV");
-        return;
-    }
+    <script>
+        function uploadCSV() {
+            const fileInput = document.getElementById("csvFile");
+            if (!fileInput.files.length) {
+                alert("Selecciona un archivo CSV");
+                return;
+            }
 
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
 
-fetch("/", { method: "POST", body: formData })
-.then(res => res.text())
-.then(html => {
-    document.getElementById("result").innerHTML = html;
-})
-.catch(err => {
-    console.error(err);
-    alert("Error al subir archivo (ver consola)");
-});
-}
-</script>
+            fetch("/", {
+                method: "POST",
+                body: formData
+            })
+            .then(async res => {
+                const text = await res.text();
+
+                if (!res.ok) {
+                    console.error("HTTP STATUS:", res.status);
+                    console.error(text);
+                    alert("Error en el servidor: " + res.status);
+                    return;
+                }
+
+                // 🔹 Insertamos el HTML recibido en el contenedor sin recargar la página
+                document.getElementById("result").innerHTML = text;
+            })
+            .catch(err => {
+                console.error("FETCH ERROR:", err);
+                alert("Error al subir archivo (ver consola)");
+            });
+        }
+    </script>
 
 {% if ranking %}
 <h3 class="mt-5">🏆 Top 10 Ranking Visual</h3>
@@ -67,6 +81,7 @@ fetch("/", { method: "POST", body: formData })
 
 </body>
 </html>
+
 
 
 
